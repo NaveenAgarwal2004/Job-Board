@@ -1,13 +1,45 @@
 {
   "name": "job-board-server",
   "version": "1.0.0",
+  "description": "Production-ready job board backend API with email and file upload services",
   "type": "module",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "health-check": "node -e \"import('./services/email.js').then(e => console.log('Email Config:', e.EMAIL_CONFIG)); import('./services/cloudinary.js').then(c => c.healthCheck().then(h => console.log('Cloudinary Health:', h)))\"",
+    "production-check": "NODE_ENV=production node test-services.js",
+    "lint": "echo 'Linting not configured. Consider adding ESLint.'",
+    "build": "echo 'No build step required for Node.js'",
+    "migrate": "echo 'Database migrations not implemented'",
+    "seed": "echo 'Database seeding not implemented'",
+    "logs": "tail -f logs/app.log 2>/dev/null || echo 'No log file found. Enable logging in production.'",
+    "docker:build": "docker build -t job-board-server .",
+    "docker:run": "docker run -p 5000:5000 --env-file .env job-board-server"
+  },
+  "keywords": [
+    "job-board",
+    "nodejs",
+    "express",
+    "mongodb",
+    "resend",
+    "cloudinary",
+    "api",
+    "backend"
+  ],
+  "author": "Naveen Agarwal",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NaveenAgarwal2004/Job-Board"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cjs": "^0.0.11",
     "cloudinary": "^1.41.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -18,9 +50,53 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.8.7",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.7"
+    "resend": "^3.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "optionalDependencies": {
+    "compression": "^1.7.4",
+    "morgan": "^1.10.1",
+    "redis": "^4.6.0",
+    "winston": "^3.11.0"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "server.js",
+      "routes/",
+      "models/",
+      "middleware/",
+      "services/"
+    ],
+    "ext": "js,json",
+    "ignore": [
+      "node_modules/",
+      "logs/",
+      "test-files/",
+      ".git/"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended"
+    ],
+    "env": {
+      "node": true,
+      "es2022": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
   }
 }
