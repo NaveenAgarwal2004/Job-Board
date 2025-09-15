@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   MapPin, Clock, DollarSign, Building, Users, Calendar, 
   Bookmark, Share2, ChevronLeft, CheckCircle, AlertCircle 
