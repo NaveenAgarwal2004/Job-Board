@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Briefcase, FileText, User, Search, TrendingUp, Clock, MapPin, Building } from 'lucide-react';
 import { applicationsAPI, jobsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
