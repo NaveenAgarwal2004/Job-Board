@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, MapPin, Briefcase, Users, Star, TrendingUp } from 'lucide-react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { jobsAPI } from '../services/api';
 
 const Home = () => {
