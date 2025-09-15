@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Search, MapPin, Filter, Clock, DollarSign, Building, ChevronLeft, ChevronRight, AlertCircle, Database } from 'lucide-react';
 import { jobsAPI } from '../services/api';
 import { format } from 'date-fns';
