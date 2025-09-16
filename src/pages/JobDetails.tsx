@@ -35,19 +35,19 @@ const JobDetails = () => {
   );
 
   const applyMutation = useMutation({
-    mutationFn: applicationsAPI.apply,
-    onSuccess: () => {
-      toast.success('Application submitted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['myApplications'] });
-      setShowApplicationModal(false);
-      setCoverLetter('');
-      setResume('');
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to submit application');
-    }
-    }
-  });
+  mutationFn: applicationsAPI.apply,
+  onSuccess: () => {
+    toast.success('Application submitted successfully!');
+    queryClient.invalidateQueries({ queryKey: ['myApplications'] });
+    setShowApplicationModal(false);
+    setCoverLetter('');
+    setResume('');
+  },
+  onError: (error: any) => {
+    toast.error(error.response?.data?.message || 'Failed to submit application');
+  }
+});
+
 
   const job = jobData?.data?.job;
   const applications = myApplicationsData?.data?.applications || [];
