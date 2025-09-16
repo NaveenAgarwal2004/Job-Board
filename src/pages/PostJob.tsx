@@ -41,16 +41,17 @@ const PostJob = () => {
   } = useForm<JobForm>();
 
   const createJobMutation = useMutation({
-    mutationFn: jobsAPI.createJob,
-    onSuccess: () => {
-      toast.success('Job posted successfully!');
-      navigate('/dashboard');
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to post job');
-    }
-    }
-  });
+  mutationFn: jobsAPI.create,
+  onSuccess: () => {
+    toast.success('Job posted successfully!');
+    queryClient.invalidateQueries({ queryKey: ['jobs'] });
+    navigate('/jobs');
+  },
+  onError: (error: any) => {
+    toast.error(error.response?.data?.message || 'Failed to post job');
+  }
+});
+
 
   const onSubmit = (data: JobForm) => {
     const jobData = {
