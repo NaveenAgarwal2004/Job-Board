@@ -21,17 +21,16 @@ const Profile = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const updateProfileMutation = useMutation({
-    mutationFn: usersAPI.updateProfile,
-    onSuccess: () => {
-      toast.success('Profile updated successfully!');
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      setIsEditing(false);
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update profile');
-    }
-    }
-  });
+  mutationFn: usersAPI.updateProfile,
+  onSuccess: () => {
+    toast.success('Profile updated successfully!');
+    queryClient.invalidateQueries({ queryKey: ['profile'] });
+  },
+  onError: (error: any) => {
+    toast.error(error.response?.data?.message || 'Failed to update profile');
+  }
+});
+
 
   const onSubmit = (data: any) => {
     updateProfileMutation.mutate(data);
