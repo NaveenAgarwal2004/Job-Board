@@ -9,8 +9,14 @@ import { format } from 'date-fns';
 const EmployerDashboard = () => {
   const { user } = useAuth();
   
-  const { data: employerStats } = useQuery('employerStats', usersAPI.getEmployerStats);
-  const { data: jobsData } = useQuery('employerJobs', () => jobsAPI.getJobs({ company: user?._id }));
+  const { data: employerStats } = useQuery({
+    queryKey: ['employerStats'],
+    queryFn: usersAPI.getEmployerStats
+  });
+  const { data: jobsData } = useQuery({
+    queryKey: ['employerJobs'],
+    queryFn: () => jobsAPI.getJobs({ company: user?._id })
+  });
 
   const stats = employerStats?.data?.stats || {};
   const jobs = jobsData?.data?.jobs || [];

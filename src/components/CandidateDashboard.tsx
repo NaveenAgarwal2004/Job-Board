@@ -9,8 +9,14 @@ import { format } from 'date-fns';
 const CandidateDashboard = () => {
   const { user } = useAuth();
   
-  const { data: applicationsData } = useQuery('myApplications', applicationsAPI.getMyApplications);
-  const { data: jobsData } = useQuery('recentJobs', () => jobsAPI.getJobs({ limit: 6 }));
+  const { data: applicationsData } = useQuery({
+    queryKey: ['myApplications'],
+    queryFn: applicationsAPI.getMyApplications
+  });
+  const { data: jobsData } = useQuery({
+    queryKey: ['recentJobs'],
+    queryFn: () => jobsAPI.getJobs({ limit: 6 })
+  });
 
   const applications = applicationsData?.data?.applications || [];
   const recentJobs = jobsData?.data?.jobs || [];

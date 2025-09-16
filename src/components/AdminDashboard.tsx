@@ -5,7 +5,10 @@ import { adminAPI } from '../services/api';
 import { format } from 'date-fns';
 
 const AdminDashboard = () => {
-    const {data : adminData} = useQuery('adminStats' , adminAPI.getStats);
+    const { data: adminData } = useQuery({
+      queryKey: ['adminStats'],
+      queryFn: adminAPI.getStats
+    });
 
     const stats = adminData?.data?.stats || {};
     const recentUsers = adminData?.data?.recentUsers || [];
@@ -170,7 +173,7 @@ return(
                                             <div className='flex items-center space-x-4 mt-2'>
                                                 <span className='bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded'>{job.category}</span>
                                                 <div className='flex items-center space-x-1'>
-                                                    <Calender className='w-4 h-4 text-gray-600'/>
+                                                    <Calendar className='w-4 h-4 text-gray-600'/>
                                                     <span className='text-xs text-gray-500'>
                                                         {format(new Date(job.createdAt), 'MMMM dd, yyyy')}
                                                     </span>
