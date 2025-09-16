@@ -46,17 +46,17 @@ const Applications = () => {
   );
 
   const updateStatusMutation = useMutation({
-    mutationFn: applicationsAPI.updateStatus,
-    onSuccess: () => {
-      toast.success('Application status updated successfully!');
-      queryClient.invalidateQueries({ queryKey: ['jobApplications', selectedJobId] });
-      setShowApplicationModal(false);
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update status');
-    }
-    }
-  });
+  mutationFn: applicationsAPI.updateStatus,
+  onSuccess: () => {
+    toast.success('Application status updated successfully!');
+    queryClient.invalidateQueries({ queryKey: ['jobApplications', selectedJobId] });
+    setShowApplicationModal(false);
+  },
+  onError: (error: any) => {
+    toast.error(error.response?.data?.message || 'Failed to update status');
+  }
+});
+
 
   const applications = user?.role === 'candidate' 
     ? candidateApplicationsData?.data?.applications || []
