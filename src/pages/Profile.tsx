@@ -12,19 +12,24 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
 
-  const { data: profileData, isLoading } = useQuery('profile', usersAPI.getProfile);
+  const { data: profileData, isLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: usersAPI.getProfile
+  });
   const profile = profileData?.data?.user;
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-  const updateProfileMutation = useMutation(usersAPI.updateProfile, {
+  const updateProfileMutation = useMutation({
+    mutationFn: usersAPI.updateProfile,
     onSuccess: () => {
       toast.success('Profile updated successfully!');
-      queryClient.invalidateQueries('profile');
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       setIsEditing(false);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to update profile');
+    }
     }
   });
 

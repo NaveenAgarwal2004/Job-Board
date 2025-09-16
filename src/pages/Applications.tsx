@@ -19,34 +19,42 @@ const Applications = () => {
 
   // Candidate applications
   const { data: candidateApplicationsData, isLoading: candidateLoading } = useQuery(
-    'myApplications',
-    applicationsAPI.getMyApplications,
-    { enabled: user?.role === 'candidate' }
+    {
+      queryKey: ['myApplications'],
+      queryFn: applicationsAPI.getMyApplications,
+      enabled: user?.role === 'candidate'
+    }
   );
 
   // Employer jobs for applications
   const { data: employerJobsData } = useQuery(
-    'employerJobs',
-    () => jobsAPI.getJobs({ company: user?._id }),
-    { enabled: user?.role === 'employer' }
+    {
+      queryKey: ['employerJobs'],
+      queryFn: () => jobsAPI.getJobs({ company: user?._id }),
+      enabled: user?.role === 'employer'
+    }
   );
 
   // Get applications for specific job (when employer selects a job)
   const [selectedJobId, setSelectedJobId] = useState('');
   const { data: jobApplicationsData, isLoading: jobApplicationsLoading } = useQuery(
-    ['jobApplications', selectedJobId],
-    () => applicationsAPI.getJobApplications(selectedJobId),
-    { enabled: !!selectedJobId && user?.role === 'employer' }
+    {
+      queryKey: ['jobApplications', selectedJobId],
+      queryFn: () => applicationsAPI.getJobApplications(selectedJobId),
+      enabled: !!selectedJobId && user?.role === 'employer'
+    }
   );
 
-  const updateStatusMutation = useMutation(applicationsAPI.updateStatus, {
+  const updateStatusMutation = useMutation({
+    mutationFn: applicationsAPI.updateStatus,
     onSuccess: () => {
       toast.success('Application status updated successfully!');
-      queryClient.invalidateQueries(['jobApplications', selectedJobId]);
+      queryClient.invalidateQueries({ queryKey: ['jobApplications', selectedJobId] });
       setShowApplicationModal(false);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to update status');
+    }
     }
   });
 

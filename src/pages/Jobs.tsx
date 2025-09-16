@@ -16,9 +16,9 @@ const Jobs = () => {
   });
 
   const { data, isLoading, error } = useQuery(
-    ['jobs', filters],
-    () => jobsAPI.getJobs(filters),
     {
+      queryKey: ['jobs', filters],
+      queryFn: () => jobsAPI.getJobs(filters),
       keepPreviousData: true,
       retry: (failureCount, error: any) => {
         // Don't retry if it's a service unavailable error

@@ -9,7 +9,10 @@ const Home = () => {
   const [location, setLocation] = useState('');
   const navigate = useNavigate();
 
-  const { data: categoriesData } = useQuery('categories', jobsAPI.getCategoriesStats);
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: jobsAPI.getCategoriesStats
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

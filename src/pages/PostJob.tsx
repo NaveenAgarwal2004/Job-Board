@@ -40,13 +40,15 @@ const PostJob = () => {
     watch
   } = useForm<JobForm>();
 
-  const createJobMutation = useMutation(jobsAPI.createJob, {
+  const createJobMutation = useMutation({
+    mutationFn: jobsAPI.createJob,
     onSuccess: () => {
       toast.success('Job posted successfully!');
       navigate('/dashboard');
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to post job');
+    }
     }
   });
 

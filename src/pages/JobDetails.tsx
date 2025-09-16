@@ -19,27 +19,33 @@ const JobDetails = () => {
   const [resume, setResume] = useState('');
 
   const { data: jobData, isLoading, error } = useQuery(
-    ['job', id],
-    () => jobsAPI.getJob(id!),
-    { enabled: !!id }
+    {
+      queryKey: ['job', id],
+      queryFn: () => jobsAPI.getJob(id!),
+      enabled: !!id
+    }
   );
 
   const { data: myApplicationsData } = useQuery(
-    'myApplications',
-    applicationsAPI.getMyApplications,
-    { enabled: !!user && user.role === 'candidate' }
+    {
+      queryKey: ['myApplications'],
+      queryFn: applicationsAPI.getMyApplications,
+      enabled: !!user && user.role === 'candidate'
+    }
   );
 
-  const applyMutation = useMutation(applicationsAPI.apply, {
+  const applyMutation = useMutation({
+    mutationFn: applicationsAPI.apply,
     onSuccess: () => {
       toast.success('Application submitted successfully!');
-      queryClient.invalidateQueries('myApplications');
+      queryClient.invalidateQueries({ queryKey: ['myApplications'] });
       setShowApplicationModal(false);
       setCoverLetter('');
       setResume('');
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to submit application');
+    }
     }
   });
 
