@@ -24,14 +24,10 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      process.env.FRONTEND_URL,
-      process.env.APP_URL
-    ].filter(Boolean);
-    
+
+    const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:5173';
+    const allowedOrigins = corsOrigin.split(',').map(origin => origin.trim()).filter(Boolean);
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
