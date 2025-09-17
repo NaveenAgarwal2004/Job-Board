@@ -14,6 +14,9 @@ const Home = () => {
     queryFn: jobsAPI.getCategoriesStats
   });
 
+  // Use categoriesData for future category-based statistics
+  console.log('Categories data:', categoriesData);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();

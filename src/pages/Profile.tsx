@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { User, Building, MapPin, Phone, Mail, Globe, Github, Linkedin, Save, Edit } from 'lucide-react';
+import { User, Building, Save, Edit } from 'lucide-react';
 import { usersAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -21,16 +21,16 @@ const Profile = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const updateProfileMutation = useMutation({
-  mutationFn: usersAPI.updateProfile,
-  onSuccess: () => {
-    toast.success('Profile updated successfully!');
-    queryClient.invalidateQueries({ queryKey: ['profile'] });
-  },
-  onError: (error: any) => {
-    toast.error(error.response?.data?.message || 'Failed to update profile');
-  }
-});
-
+    mutationFn: usersAPI.updateProfile,
+    onSuccess: () => {
+      toast.success('Profile updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      setIsEditing(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    }
+  });
 
   const onSubmit = (data: any) => {
     updateProfileMutation.mutate(data);
@@ -398,12 +398,12 @@ const Profile = () => {
             <div className="mt-6 flex justify-end">
               <button
                 type="submit"
-                disabled={updateProfileMutation.isLoading}
+                disabled={updateProfileMutation.isPending}
                 className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 <span>
-                  {updateProfileMutation.isLoading ? 'Saving...' : 'Save Changes'}
+                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
                 </span>
               </button>
             </div>

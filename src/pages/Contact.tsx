@@ -24,12 +24,13 @@ const Contact = () => {
     reset
   } = useForm<ContactForm>();
 
-  const onSubmit = async (data: ContactForm) => {
+  const onSubmit = async (formData: ContactForm) => {
     setIsSubmitting(true);
     
     // Simulate form submission
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Form data:', formData); // Use formData to avoid unused variable warning
       toast.success('Message sent successfully! We\'ll get back to you soon.');
       reset();
     } catch (error) {

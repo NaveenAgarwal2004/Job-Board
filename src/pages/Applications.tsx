@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { 
   FileText, Clock, CheckCircle, XCircle, User, Building, 
-  MapPin, Calendar, Filter, Search, Eye 
+  MapPin, Calendar, Search, Eye 
 } from 'lucide-react';
 import { applicationsAPI, jobsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -37,7 +37,7 @@ const Applications = () => {
 
   // Get applications for specific job (when employer selects a job)
   const [selectedJobId, setSelectedJobId] = useState('');
-  const { data: jobApplicationsData, isLoading: jobApplicationsLoading } = useQuery(
+  const { data: jobApplicationsData } = useQuery(
     {
       queryKey: ['jobApplications', selectedJobId],
       queryFn: () => applicationsAPI.getJobApplications(selectedJobId),
@@ -46,17 +46,17 @@ const Applications = () => {
   );
 
   const updateStatusMutation = useMutation({
-  mutationFn: applicationsAPI.updateStatus,
-  onSuccess: () => {
-    toast.success('Application status updated successfully!');
-    queryClient.invalidateQueries({ queryKey: ['jobApplications', selectedJobId] });
-    setShowApplicationModal(false);
-  },
-  onError: (error: any) => {
-    toast.error(error.response?.data?.message || 'Failed to update status');
-  }
-});
-
+    mutationFn: (data: { id: string; status: string; notes?: string }) => 
+      applicationsAPI.updateStatus(data.id, { status: data.status, notes: data.notes }),
+    onSuccess: () => {
+      toast.success('Application status updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['jobApplications', selectedJobId] });
+      setShowApplicationModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update status');
+    }
+  });
 
   const applications = user?.role === 'candidate' 
     ? candidateApplicationsData?.data?.applications || []

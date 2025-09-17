@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import CandidateDashboard from '../components/CandidateDashboard';
 import EmployerDashboard from '../components/EmployerDashboard';

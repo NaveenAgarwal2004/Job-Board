@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, Search, Tag, Clock, TrendingUp } from 'lucide-react';
+import { ArrowRight, Search, Tag, Clock, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Blog = () => {

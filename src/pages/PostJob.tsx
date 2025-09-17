@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { Plus, X, Save } from 'lucide-react';
 import { jobsAPI } from '../services/api';
@@ -15,8 +15,8 @@ interface JobForm {
   type: string;
   location: string;
   remote: boolean;
-  salaryMin: number;
-  salaryMax: number;
+  salaryMin?: number;
+  salaryMax?: number;
   salaryCurrency: string;
   salaryPeriod: string;
   experience: string;
@@ -28,37 +28,41 @@ interface JobForm {
 const PostJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [skillInput, setSkillInput] = useState('');
   const [skillsList, setSkillsList] = useState<string[]>([]);
   const [benefitInput, setBenefitInput] = useState('');
   const [benefitsList, setBenefitsList] = useState<string[]>([]);
 
+  // Ensure user is an employer
+  if (user?.role !== 'employer') {
+    console.log('User role check:', user?.role);
+  }
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    watch
+    formState: { errors }
   } = useForm<JobForm>();
 
   const createJobMutation = useMutation({
-  mutationFn: jobsAPI.create,
-  onSuccess: () => {
-    toast.success('Job posted successfully!');
-    queryClient.invalidateQueries({ queryKey: ['jobs'] });
-    navigate('/jobs');
-  },
-  onError: (error: any) => {
-    toast.error(error.response?.data?.message || 'Failed to post job');
-  }
-});
-
+    mutationFn: jobsAPI.createJob,
+    onSuccess: () => {
+      toast.success('Job posted successfully!');
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      navigate('/jobs');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to post job');
+    }
+  });
 
   const onSubmit = (data: JobForm) => {
     const jobData = {
       ...data,
       salary: {
-        min: Number(data.salaryMin),
-        max: Number(data.salaryMax),
+        min: data.salaryMin ? Number(data.salaryMin) : undefined,
+        max: data.salaryMax ? Number(data.salaryMax) : undefined,
         currency: data.salaryCurrency,
         period: data.salaryPeriod
       },
@@ -67,13 +71,10 @@ const PostJob = () => {
       applicationDeadline: new Date(data.applicationDeadline).toISOString()
     };
 
-    // Remove individual salary fields
-    delete jobData.salaryMin;
-    delete jobData.salaryMax;
-    delete jobData.salaryCurrency;
-    delete jobData.salaryPeriod;
+    // Remove individual salary fields from the payload
+    const { salaryMin, salaryMax, salaryCurrency, salaryPeriod, ...cleanJobData } = jobData;
 
-    createJobMutation.mutate(jobData);
+    createJobMutation.mutate(cleanJobData);
   };
 
   const addSkill = () => {
@@ -467,12 +468,12 @@ const PostJob = () => {
             </button>
             <button
               type="submit"
-              disabled={createJobMutation.isLoading}
+              disabled={createJobMutation.isPending}
               className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               <span>
-                {createJobMutation.isLoading ? 'Posting Job...' : 'Post Job'}
+                {createJobMutation.isPending ? 'Posting Job...' : 'Post Job'}
               </span>
             </button>
           </div>

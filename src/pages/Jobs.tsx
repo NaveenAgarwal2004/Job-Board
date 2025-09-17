@@ -50,18 +50,19 @@ const Jobs = () => {
     page: 1
   });
 
-  const { data, isLoading, error } = useQuery<JobsResponse, Error>(
-    ['jobs', filters],
-    () => jobsAPI.getJobs(filters).then(res => res.data),
-    {
-      retry: (failureCount: number, error: any) => {
-        if (error?.response?.status === 503) {
-          return false;
-        }
-        return failureCount < 3;
+  const { data, isLoading, error } = useQuery<JobsResponse>({
+    queryKey: ['jobs', filters],
+    queryFn: async () => {
+      const response = await jobsAPI.getJobs(filters);
+      return response.data;
+    },
+    retry: (failureCount: number, error: any) => {
+      if (error?.response?.status === 503) {
+        return false;
       }
+      return failureCount < 3;
     }
-  );
+  });
 
   const handleFilterChange = (key: string, value: string | boolean) => {
     setFilters(prev => ({
