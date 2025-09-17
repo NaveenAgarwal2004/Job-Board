@@ -17,8 +17,6 @@ import About from './pages/About';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import ProtectedRoute from './components/ProtectedRoute';
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -65,7 +63,6 @@ function App() {
                     <Applications />
                   </ProtectedRoute>
                 } />
-                <Route path="/speed-insights" element={<SpeedInsights />} />
               </Routes>
             </main>
             <Footer />
