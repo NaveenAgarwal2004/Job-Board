@@ -1,6 +1,5 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Users, Briefcase, FileText, Building, TrendingUp, UserCheck, UserX, Calendar } from 'lucide-react';
+import { Users, Briefcase, FileText, Building, TrendingUp, UserCheck, Calendar } from 'lucide-react';
 import { adminAPI } from '../services/api';
 import { format } from 'date-fns';
 

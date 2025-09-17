@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Briefcase, Users, Eye, Calendar, MapPin, Clock, FileText } from 'lucide-react';
-import { jobsAPI, applicationsAPI, usersAPI } from '../services/api';
+import { jobsAPI, usersAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
 

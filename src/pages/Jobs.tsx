@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, MapPin, Filter, Clock, DollarSign, Building, ChevronLeft, ChevronRight, AlertCircle, Database } from 'lucide-react';
@@ -15,11 +15,10 @@ const Jobs = () => {
     page: 1
   });
 
-  const { data, isLoading, error } = useQuery(
+  const { data, isPending, error } = useQuery(
     {
       queryKey: ['jobs', filters],
       queryFn: () => jobsAPI.getJobs(filters),
-      keepPreviousData: true,
       retry: (failureCount, error: any) => {
         // Don't retry if it's a service unavailable error
         if (error?.response?.status === 503) {
@@ -53,7 +52,7 @@ const Jobs = () => {
   // Check if we're in mock mode
   const isMockMode = data?.data?.mockMode || false;
 
-  if (error && !error.isServiceUnavailable) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -200,7 +199,7 @@ const Jobs = () => {
 
           {/* Jobs List */}
           <div className="lg:col-span-3">
-            {isLoading ? (
+            {isPending ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="bg-white rounded-lg p-6 shadow-sm animate-pulse">

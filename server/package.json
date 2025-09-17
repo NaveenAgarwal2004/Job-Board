@@ -98,5 +98,9 @@
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "es5"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/NaveenAgarwal2004/Job-Board/issues"
+  },
+  "homepage": "https://github.com/NaveenAgarwal2004/Job-Board#readme"
 }
