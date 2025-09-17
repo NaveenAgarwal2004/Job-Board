@@ -5,6 +5,41 @@ import { Search, MapPin, Filter, Clock, DollarSign, Building, ChevronLeft, Chevr
 import { jobsAPI } from '../services/api';
 import { format } from 'date-fns';
 
+interface Job {
+  _id: string;
+  title: string;
+  featured?: boolean;
+  company?: {
+    name: string;
+  };
+  location: string;
+  remote: boolean;
+  type: string;
+  createdAt: string;
+  salary?: {
+    min: number;
+    max?: number;
+  };
+  description: string;
+  category: string;
+  experience: string;
+  skills?: string[];
+  applicationsCount: number;
+}
+
+interface Pagination {
+  total: number;
+  pages: number;
+  hasPrev: boolean;
+  hasNext: boolean;
+}
+
+interface JobsResponse {
+  jobs: Job[];
+  pagination: Pagination;
+  mockMode?: boolean;
+}
+
 const Jobs = () => {
   const [filters, setFilters] = useState({
     search: '',
@@ -15,12 +50,11 @@ const Jobs = () => {
     page: 1
   });
 
-  const { data, isPending, error } = useQuery(
+  const { data, isLoading, error } = useQuery<JobsResponse, Error>(
+    ['jobs', filters],
+    () => jobsAPI.getJobs(filters).then(res => res.data),
     {
-      queryKey: ['jobs', filters],
-      queryFn: () => jobsAPI.getJobs(filters),
-      retry: (failureCount, error: any) => {
-        // Don't retry if it's a service unavailable error
+      retry: (failureCount: number, error: any) => {
         if (error?.response?.status === 503) {
           return false;
         }
@@ -29,11 +63,11 @@ const Jobs = () => {
     }
   );
 
-  const handleFilterChange = (key: string, value: any) => {
+  const handleFilterChange = (key: string, value: string | boolean) => {
     setFilters(prev => ({
       ...prev,
       [key]: value,
-      page: 1 // Reset to first page when filters change
+      page: 1
     }));
   };
 
@@ -49,8 +83,7 @@ const Jobs = () => {
 
   const jobTypes = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship'];
 
-  // Check if we're in mock mode
-  const isMockMode = data?.data?.mockMode || false;
+  const isMockMode = data?.mockMode || false;
 
   if (error) {
     return (
@@ -66,7 +99,6 @@ const Jobs = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mock Mode Banner */}
       {isMockMode && (
         <div className="bg-yellow-50 border-b border-yellow-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -82,12 +114,9 @@ const Jobs = () => {
         </div>
       )}
 
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Find Jobs</h1>
-          
-          {/* Search Bar */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -99,7 +128,6 @@ const Jobs = () => {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
             <div className="flex-1 relative">
               <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -110,7 +138,6 @@ const Jobs = () => {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-
             <button className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <Search className="w-5 h-5" />
               <span>Search</span>
@@ -121,15 +148,12 @@ const Jobs = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Filter className="w-5 h-5 text-gray-600" />
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
               </div>
-
-              {/* Category Filter */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Category
@@ -147,8 +171,6 @@ const Jobs = () => {
                   ))}
                 </select>
               </div>
-
-              {/* Job Type Filter */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Job Type
@@ -166,8 +188,6 @@ const Jobs = () => {
                   ))}
                 </select>
               </div>
-
-              {/* Remote Work */}
               <div className="mb-6">
                 <label className="flex items-center space-x-3">
                   <input
@@ -179,8 +199,6 @@ const Jobs = () => {
                   <span className="text-sm font-medium text-gray-700">Remote Work</span>
                 </label>
               </div>
-
-              {/* Clear Filters */}
               <button
                 onClick={() => setFilters({
                   search: '',
@@ -196,10 +214,8 @@ const Jobs = () => {
               </button>
             </div>
           </div>
-
-          {/* Jobs List */}
           <div className="lg:col-span-3">
-            {isPending ? (
+            {isLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="bg-white rounded-lg p-6 shadow-sm animate-pulse">
@@ -217,10 +233,9 @@ const Jobs = () => {
               </div>
             ) : (
               <>
-                {/* Results Header */}
                 <div className="flex justify-between items-center mb-6">
                   <p className="text-gray-600">
-                    {data?.data?.pagination?.total || data?.data?.jobs?.length || 0} jobs found
+                    {data?.pagination?.total || data?.jobs?.length || 0} jobs found
                     {isMockMode && <span className="text-yellow-600 ml-2">(Sample Data)</span>}
                   </p>
                   <select className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -229,10 +244,8 @@ const Jobs = () => {
                     <option>Sort by: Salary Low to High</option>
                   </select>
                 </div>
-
-                {/* Jobs */}
                 <div className="space-y-6">
-                  {(data?.data?.jobs || []).map((job: any) => (
+                  {(data?.jobs || []).map((job: Job) => (
                     <div key={job._id} className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border">
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
@@ -283,11 +296,9 @@ const Jobs = () => {
                           )}
                         </div>
                       </div>
-
                       <p className="text-gray-700 mb-4 line-clamp-2">
                         {job.description.substring(0, 200)}...
                       </p>
-
                       <div className="flex flex-wrap gap-2 mb-4">
                         <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                           {job.category}
@@ -301,7 +312,6 @@ const Jobs = () => {
                           </span>
                         ))}
                       </div>
-
                       <div className="flex justify-between items-center">
                         <div className="text-sm text-gray-500">
                           {job.applicationsCount} applications
@@ -316,21 +326,18 @@ const Jobs = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Pagination */}
-                {data?.data?.pagination && data.data.pagination.pages > 1 && (
+                {data?.pagination && data.pagination.pages > 1 && (
                   <div className="flex justify-center items-center space-x-4 mt-8">
                     <button
                       onClick={() => handlePageChange(filters.page - 1)}
-                      disabled={!data.data.pagination.hasPrev}
+                      disabled={!data.pagination.hasPrev}
                       className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       <span>Previous</span>
                     </button>
-
                     <div className="flex items-center space-x-2">
-                      {[...Array(Math.min(5, data.data.pagination.pages))].map((_, i) => {
+                      {[...Array(Math.min(5, data.pagination.pages))].map((_, i) => {
                         const page = i + 1;
                         return (
                           <button
@@ -347,10 +354,9 @@ const Jobs = () => {
                         );
                       })}
                     </div>
-
                     <button
                       onClick={() => handlePageChange(filters.page + 1)}
-                      disabled={!data.data.pagination.hasNext}
+                      disabled={!data.pagination.hasNext}
                       className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                       <span>Next</span>
@@ -366,5 +372,4 @@ const Jobs = () => {
     </div>
   );
 };
-
 export default Jobs;
